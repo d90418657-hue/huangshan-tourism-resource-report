@@ -1,0 +1,133 @@
+<html lang="zh-CN"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>摇摆周期 · 文旅策略工具箱</title>
+  <meta name="description" content="基于附件文档的摇摆周期计算与文旅策略问答工具箱">
+  <style>
+    :root { --ink:#20211d; --muted:#77776f; --paper:#f6f3ec; --cream:#fbfaf6; --line:#ded9cc; --rust:#bf5137; --moss:#68745a; --gold:#c89b54; --shadow:0 22px 60px rgba(49,45,35,.09); }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:var(--paper); font-family: "Noto Sans SC","Microsoft YaHei",sans-serif; }
+    body:before { content:""; position:fixed; inset:0; pointer-events:none; opacity:.34; background-image:radial-gradient(rgba(32,33,29,.06) .6px, transparent .7px); background-size:7px 7px; mix-blend-mode:multiply; }
+    .wrap { width:min(1220px, calc(100% - 48px)); margin:0 auto; }
+    header { display:flex; justify-content:space-between; align-items:center; padding:28px 0 22px; border-bottom:1px solid var(--line); }
+    .brand { display:flex; align-items:center; gap:12px; font-family:Georgia,"Songti SC",serif; font-weight:700; letter-spacing:.08em; }
+    .mark { width:34px; height:34px; border:1px solid var(--ink); display:grid; place-items:center; font-family:Georgia,serif; font-size:20px; transform:rotate(-8deg); }
+    .eyebrow { color:var(--rust); text-transform:uppercase; font-size:11px; letter-spacing:.19em; font-weight:700; }
+    .top-note { font-size:12px; color:var(--muted); }
+    .hero { padding:75px 0 66px; display:grid; grid-template-columns:1.12fr .88fr; gap:70px; align-items:end; }
+    h1 { font-family:Georgia,"Songti SC",serif; font-size:clamp(45px,7vw,86px); line-height:.98; font-weight:500; letter-spacing:-.07em; margin:12px 0 23px; max-width:700px; }
+    .hero p { max-width:570px; color:#5b5c54; line-height:1.9; margin:0; font-size:15px; }
+    .hero-art { min-height:250px; position:relative; display:grid; place-items:center; }
+    .orbit { width:235px; height:235px; border:1px solid #c9c1b0; border-radius:50%; position:relative; transform:rotate(-18deg); }
+    .orbit:before,.orbit:after { content:""; position:absolute; border:1px solid #c9c1b0; border-radius:50%; inset:25px -24px; transform:rotate(58deg); }
+    .orbit:after { inset:53px -48px; transform:rotate(-43deg); }
+    .orbit-dot { position:absolute; width:14px; height:14px; border-radius:50%; background:var(--rust); top:7px; left:95px; box-shadow:0 0 0 8px rgba(191,81,55,.12); }
+    .art-caption { position:absolute; right:0; bottom:0; max-width:210px; font:italic 14px/1.6 Georgia,"Songti SC",serif; color:var(--moss); }
+    .tabs { display:flex; gap:7px; border-bottom:1px solid var(--line); margin-bottom:22px; }
+    .tab { appearance:none; border:0; background:none; padding:13px 17px; color:var(--muted); cursor:pointer; font:inherit; border-bottom:2px solid transparent; }
+    .tab.active { color:var(--ink); border-color:var(--rust); }
+    .panel { background:rgba(251,250,246,.75); border:1px solid var(--line); box-shadow:var(--shadow); padding:26px; }
+    .ask { display:grid; grid-template-columns:1fr auto; gap:12px; }
+    input,select { width:100%; border:1px solid #cbc6b9; background:#fffdf8; padding:16px 17px; border-radius:0; font:inherit; color:var(--ink); outline:none; }
+    input:focus,select:focus { border-color:var(--rust); box-shadow:0 0 0 3px rgba(191,81,55,.1); }
+    button.primary { border:0; background:var(--ink); color:#fff; padding:0 25px; cursor:pointer; font:inherit; transition:.2s; }
+    button.primary:hover { background:var(--rust); transform:translateY(-1px); }
+    .suggestions { display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; }
+    .chip { cursor:pointer; padding:8px 11px; border:1px solid var(--line); color:#696a62; background:transparent; font-size:12px; }
+    .chip:hover { color:var(--rust); border-color:var(--rust); }
+    .answer { margin-top:22px; padding-top:22px; border-top:1px solid var(--line); display:none; }
+    .answer.show { display:block; animation:rise .35s ease both; }
+    @keyframes rise { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+    .answer h3 { margin:0 0 14px; font-family:Georgia,"Songti SC",serif; font-size:25px; font-weight:500; }
+    .answer p { line-height:1.8; color:#55564f; margin:9px 0; }
+    .answer .answer-label { color:var(--rust); font-size:11px; letter-spacing:.14em; font-weight:700; margin-top:22px; }
+    .answer .answer-block { border-top:1px solid var(--line); padding-top:14px; margin-top:15px; }
+    .answer .answer-block strong { color:var(--ink); font-size:14px; }
+    .answer ul { margin:8px 0 4px; padding-left:20px; color:#55564f; line-height:1.9; font-size:13px; }
+    .answer li::marker { color:var(--rust); }
+    .answer .source { color:var(--rust); font-size:12px; margin-top:18px; }
+    .grid { display:grid; grid-template-columns:1.05fr .95fr; gap:22px; }
+    .section-title { display:flex; justify-content:space-between; align-items:baseline; margin:0 0 19px; }
+    .section-title h2 { font:500 25px Georgia,"Songti SC",serif; margin:0; }
+    .section-title span { color:var(--muted); font-size:11px; letter-spacing:.12em; }
+    .source-grid { display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+    .source-card { padding:14px; background:#f0ede5; min-height:90px; border-left:3px solid #c6c0b2; }
+    .source-card b { display:block; font:500 15px Georgia,"Songti SC",serif; margin-bottom:7px; }
+    .source-card small { color:#77776f; line-height:1.5; display:block; font-size:12px; }
+    .calculator { margin-top:22px; }
+    .calc-head { display:flex; justify-content:space-between; gap:20px; align-items:end; margin-bottom:18px; }
+    .calc-head p { color:var(--muted); font-size:12px; margin:3px 0 0; }
+    .score { font:500 42px Georgia,serif; color:var(--rust); white-space:nowrap; }
+    .sliders { display:grid; grid-template-columns:1fr 1fr; gap:10px 22px; }
+    .slider-row { display:grid; grid-template-columns:1fr 55px; gap:8px; align-items:center; border-top:1px solid var(--line); padding-top:10px; }
+    .slider-row label { font-size:12px; color:#5f6058; }
+    .slider-row input { grid-column:1 / -1; padding:0; accent-color:var(--rust); }
+    .slider-value { text-align:right; color:var(--rust); font-size:13px; }
+    .result-band { margin-top:18px; display:flex; justify-content:space-between; gap:20px; background:var(--moss); color:#fff; padding:18px 20px; align-items:center; }
+    .result-band strong { font:500 25px Georgia,"Songti SC",serif; }
+    .result-band span { font-size:12px; opacity:.82; text-align:right; }
+    .modules { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:22px 0 70px; }
+    .module { border-top:2px solid var(--ink); padding:19px 3px 5px; cursor:pointer; }
+    .module:nth-child(2) { border-color:var(--gold); }.module:nth-child(3) { border-color:var(--moss); }
+    .module h3 { font:500 21px Georgia,"Songti SC",serif; margin:0 0 8px; }.module p { color:var(--muted); font-size:12px; line-height:1.65; margin:0; }
+    footer { border-top:1px solid var(--line); padding:22px 0 34px; display:flex; justify-content:space-between; color:var(--muted); font-size:11px; }
+    @media(max-width:800px){ .wrap{width:min(100% - 28px,600px)} header{padding-top:18px}.top-note{display:none}.hero{grid-template-columns:1fr;gap:12px;padding:50px 0 35px}.hero-art{min-height:190px}.grid{grid-template-columns:1fr}.modules{grid-template-columns:1fr}.source-grid,.sliders{grid-template-columns:1fr}.ask{grid-template-columns:1fr}.primary{height:50px}.result-band{align-items:flex-start;flex-direction:column}.result-band span{text-align:left} }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header><div class="brand"><div class="mark">黄</div><div>黄山旅游资源研判</div></div><div class="top-note">黄山自然景观 × 徽州文化 · 资源投向工具</div></header>
+    <main>
+      <section class="hero"><div><div class="eyebrow">HUANGSHAN RESOURCE DIRECTION</div><h1>黄山这一阶段，<br><em>资源该投向哪里？</em></h1><p>以黄山风景区和古徽州文化旅游区为参照，把客流、住宿、市场热度、景区承载和文化反馈放在一起判断：当前更应该守住黄山的自然观光，还是把资源转向徽州文化体验。</p></div><div class="hero-art"><div class="orbit"><i class="orbit-dot"></i></div><div class="art-caption">山是底色，<br>文化决定黄山能走多远。</div></div></section>
+      <div class="tabs"><button class="tab active" data-tab="qa">问答入口</button><button class="tab" data-tab="calc">周期计算器</button><button class="tab" data-tab="map">方案导航</button></div>
+      <section id="qa" class="panel tab-panel" style="display: block;"><div class="section-title"><h2>问黄山该怎么投资源</h2><span>ASK HUANGSHAN</span></div><div class="ask"><input id="question" placeholder="例如：如果黄山的综合值是 -7，资源应该投向哪里？"><button class="primary" id="askBtn">生成研判</button></div><div class="suggestions"><button class="chip">生成一份黄山七项报告</button><button class="chip">如果黄山综合值是 -7，资源投向哪里？</button><button class="chip">如果综合值是 +7，黄山该发展什么？</button><button class="chip">黄山怎么判断自然还是文化需求？</button><button class="chip">黄山商业该控制什么？</button></div><div id="answer" class="answer"></div></section>
+      <section id="calc" class="tab-panel" style="display: none;"><div class="grid"><div class="panel"><div class="calc-head"><div><div class="section-title" style="margin-bottom:4px"><h2>十源指标盘</h2><span>+1 / 0 / −1</span></div><p>每个指标指向“求异”记 +1，指向“求静”记 −1，中间状态记 0。</p></div><div class="score" id="score">+2</div></div><div class="sliders" id="sliders"></div><div class="result-band"><strong id="phase">求异和缓期</strong><span id="phaseDesc">适度增加文化内容，同时守住自然景观底盘</span></div></div><div class="panel"><div class="section-title"><h2>判定逻辑</h2><span>RANGE</span></div><p style="font-size:13px;line-height:1.8;color:#5d5e56">总分范围为【−10，10】。模型把市场需求理解为一条会摆动的轴：分数越高，越偏向文化体验；分数越低，越偏向自然观光。</p><div style="margin-top:25px;display:grid;gap:11px;font-size:13px"><div><b style="color:var(--rust)">（6，10】</b>　求异加强期</div><div><b style="color:#b27639">（1，6】</b>　求异和缓期</div><div><b>【−1，1】</b>　临界期</div><div><b style="color:#647157">【−6，−1）</b>　求静和缓期</div><div><b style="color:#4d6045">【−10，−6）</b>　求静加强期</div></div></div></div></section>
+      <section id="map" class="tab-panel" style="display: none;"><div class="modules"><article class="module" data-q="商业规模红线看什么？"><h3>商业规模红线</h3><p>从商业体数量与商业体质量两条线，守住景观完整性，又让商业融入景色。</p></article><article class="module" data-q="青年文创计划分几期？"><h3>青年文创培养计划</h3><p>初期试点，中期品牌化，晚期形成品牌集群与协调宣传工作组。</p></article><article class="module" data-q="传承中心有哪些部门？"><h3>徽州文化传承保护中心</h3><p>运营、研究、项目、信息、宣传五部门协同，把文化资源变成长期能力。</p></article></div><div class="panel"><div class="section-title"><h2>三套方案如何联动</h2><span>ONE SYSTEM, THREE LEVERS</span></div><p style="line-height:2;color:#5d5e56;margin:0">传承中心提供文化资料与游客反馈，青年文创计划把资料转成有当地识别度的产品，“村村出品”把工作方向落到村落与在地生产；商业规模红线则负责约束同质化、商业化与景观影响。四者形成“文化资源 → 产品与项目 → 游客反馈 → 再调整”的循环。</p></div></section>
+    </main>
+    <footer><span>内容依据用户提供的附件一整理</span><a href="https://rkisogk1.jsjform.com/f/MWO7Mn" target="_blank" style="color:var(--rust)">打开计算 Demo ↗</a></footer>
+  </div>
+  <script>
+    const answers = [
+      { keys:['报告','旅游设施','民宿酒店','票价','公共交通','文化噪音','政府方案','管理者方案','七项'], title:'黄山旅游资源投向报告｜示例值 −7', body:'<div class="answer-label">一、总判断</div><p>这里用综合值 <strong>−7</strong> 做一次演示。按附件中的区间，−7 属于“求静加强期”：当前资源配置应先守住黄山自然观光的核心吸引力，再把文化内容作为低干扰、强地方性的补充，而不是在主景区里继续堆叠商业。</p><div class="answer-block"><strong>1｜旅游设施：偏向自然，但把文化放到外围和线路上</strong><p>主体景点的设施优先服务观景、步行、休息、换乘和承载力；非主体景点再配置少量文化展示、村落体验和文创经营。这样既回应自然观光旺盛的需求，也不让文化设施侵入黄山的观赏完整性。</p></div><div class="answer-block"><strong>2｜民宿酒店：从“住一晚”转向自然游线与徽州村落的组合</strong><p>大趋势应先围绕停留时间和住宿预定量做文章：提升自然游线周边的住宿衔接、服务品质和安静感；同时在古徽州村落发展有地方特色的民宿，让住宿成为进入徽州文化的入口，而不是复制城市酒店或同质化客栈。</p></div><div class="answer-block"><strong>3｜游客体验：优先改善交通拥堵、游线断点和停留体验</strong><p>附件中的交通通行率、配套设施、游客满意率和投诉率，应该作为这一阶段的体验抓手。先找出高峰期最拥堵的换乘点、最容易产生投诉的服务环节和游客停留时间短的区域，再做设施改造；不要先用更多商业活动掩盖体验问题。</p></div><div class="answer-block"><strong>4｜票价：随需求和承载压力分时段、分场景波动</strong><p>附件没有给出具体票价公式，因此不能凭空给出金额。按这套模型，建议把票价作为调节客流的工具：自然观光需求旺盛、承载压力高时，高峰时段可适度上浮，低峰和外围线路可用优惠拉长停留；文化项目在试点期宜采用组合票或低门槛体验票，先验证游客愿不愿意付费。所有调价都应同时观察客流、住宿、投诉率和满意度。</p></div><div class="answer-block"><strong>5｜公共交通：优先保障主景区承载，再连接文化节点</strong><p>网约车、出租车、公交和景区接驳资源，应先投向高峰时段的主干线、换乘站和景区入口，解决“进得来、走得顺、离得开”。在自然观光基本盘稳定后，再用支线把古村、文创工作室和文化项目串起来，避免所有交通资源都挤在单一热门景点。</p></div><div class="answer-block"><strong>6｜文化噪音：目前按 −7 推断为需要警惕但不宜过度开发</strong><p>附件没有提供“文化噪音指数”的实测数值，所以不能说它已经达到某个百分比或等级。能做的判断是：在“求静加强期”，应重点监测游客对同质化、商业化的评价、社交媒体上的重复内容、商业体与景观的协调度，以及投诉率。如果这些信号变差，说明文化表达已经开始变成噪音，需要先减量和提质。</p></div><div class="answer-block"><strong>7｜给政府和管理者的方案</strong><ul><li><strong>近期（0—6个月）：</strong>选 1—3 个景区试点，建立十项指标月度台账，先解决交通、换乘、设施和投诉集中点；主体景点严格控制商业。</li><li><strong>中期（6—12个月）：</strong>在非主体景点引入青年文创工作室和少量徽州文化项目，用游客停留、购买率、满意率验证产品质量。</li><li><strong>后期（12—24个月）：</strong>由徽州文化传承保护中心统筹古籍、古村和文化资料，形成数字库、研学项目和本土品牌集群，再根据综合值变化调整资源比例。</li></ul></div><div class="answer-block"><strong>一句话结论</strong><p>综合值 −7 的黄山，不是“不要文化”，而是先把山岳景观、交通承载和自然体验做好；等市场信号向临界区间移动，再有节奏地增加徽州文化和文创资源。</p></div>', source:'分析依据：附件一中的十项计算源、五档周期、商业规模红线、青年文创计划与徽州文化传承保护中心' },
+      { keys:['资源投向','投向哪里','应该投向哪里','发展什么'], title:'示例研判：黄山综合值为 −7，资源先投向自然观光底盘', body:'<div class="answer-label">黄山的判断</div><p>如果黄山当前综合值为 <strong>−7</strong>，按模型属于【−10，−6）的“求静加强期”。这不表示黄山不需要文化，而是说明这一阶段游客的主要需求更偏向山岳景观、自然环境和安静的游览体验。因此，资源投向应先稳住自然观光的基本盘，再做小规模、低干扰的文化补充。</p><div class="answer-block"><strong>优先投什么</strong><ul><li><strong>投向景区承载：</strong>改善主干线通行、换乘组织、景区内部游线和高峰期疏导，避免客流上涨带来拥堵和景观损耗。</li><li><strong>投向住宿与停留：</strong>结合住宿预定量和游客停留时间，提升自然观光线路周边的住宿衔接，而不是急着在主景点增加店铺。</li><li><strong>投向景观保护：</strong>控制主体景点内商业行为，把经营更多放到非主体景点的专门区域，守住黄山山岳景观的完整性。</li><li><strong>投向自然体验：</strong>优先优化观景、步行、休息和交通体验；文化内容以少量、在地、能解释黄山与徽州关系的项目为主。</li></ul></div><div class="answer-block"><strong>暂时不要做什么</strong><p>不要把“客流旺”直接等同于“应该扩张商业”。如果网络热度上升但投诉率、交通拥堵和文化噪音也上升，继续铺设同质化商铺只会削弱黄山的核心吸引力。</p></div><div class="answer-block"><strong>什么时候转向文化投入</strong><p>当住宿、重访游客、游客消费欲和文化体验反馈逐步改善，综合值从 −7 向临界区间移动时，再加大徽州文化、青年文创、研学活动和村村出品的投入，会更符合市场变化。</p></div>', source:'黄山资源投向分析：基于“求静加强期”与商业规模红线' },
+      { keys:['+7','＋7','综合值是 +7','综合值是+7'], title:'示例研判：黄山综合值为 +7，资源可以转向徽州文化体验', body:'<div class="answer-label">黄山的判断</div><p>如果黄山当前综合值为 <strong>+7</strong>，按模型属于（6，10】的“求异加强期”。说明游客对文化体验的需求旺盛，黄山的资源配置可以从单一自然观光，转向“黄山山岳景观 + 徽州文化”的组合体验。</p><div class="answer-block"><strong>优先投什么</strong><ul><li>建设徽州古村、古籍、民俗和地方工艺的内容库，先由徽州文化传承保护中心完成研究和整理。</li><li>支持青年文创工作室，把村落文化转成当地文创产品和商业微景点，减少通用纪念品。</li><li>开发研学活动、假期大讲堂和文化参观项目，让文化内容真正进入游客行程。</li><li>通过“村村出品”把产品和就业机会落到村落，形成黄山本土文创品牌集群。</li></ul></div><div class="answer-block"><strong>需要守住的边界</strong><p>文化投入增加，不等于在主体景点里大量增加商业。仍然要执行商业规模红线：控制主体景点商业数量，提高商品地方性，并用游客停留时间、购买率和景观协调度检验投入是否有效。</p></div>', source:'黄山资源投向分析：基于“求异加强期”、青年文创与徽州文化方案' },
+      { keys:['摇摆周期','怎么计算','如何计算','计算方法','计算规则'], title:'“摇摆周期”是一套十源指标赋值模型', body:'<div class="answer-label">结论</div><p>模型通过十个数据源判断游客需求更偏向文化体验（“求异”）还是自然观光（“求静”），最后得到 −10 到 10 的总分。</p><div class="answer-block"><strong>计算步骤</strong><ul><li>先采集十项指标：游客接待量、住宿预定量、游客意向调研、网络热度、服务业收入、公共交通意向、配套服务设施、交通通行率、游客结构、文化噪音指数。</li><li>逐项判断指标方向：指向“求异”记 +1，指向“求静”记 −1，文化体验与自然观光并重记 0。</li><li>把十项分值相加，再按区间判断周期阶段。</li></ul></div><div class="answer-block"><strong>为什么这样做</strong><p>游客量等核心数据反映现实变化，网络热度和收入反映市场情绪，设施与交通反映供给承载力，文化噪音指数则补足“同质化、商业化”等文化感受层面的信号。</p></div>', source:'对应文档：计算源、计算方式' },
+      { keys:['10 个计算源','10个计算源','计算源','十个'], title:'十个计算源分别回答四个问题', body:'<div class="answer-label">一、核心景区数据</div><ul><li><strong>游客接待量：</strong>观察游客总量与增速，判断大周期。</li><li><strong>住宿预定量：</strong>判断留宿吸引力，并观察游客“求异”或“求静”的状态。</li><li><strong>游客意向调研：</strong>收集满意率、投诉率与消费欲。</li></ul><div class="answer-label">二、市场信号数据</div><ul><li><strong>景区网络热度：</strong>点击量、浏览量、转发量。</li><li><strong>景区服务业收入：</strong>间接反映满意程度与消费心理。</li><li><strong>公共交通出行意向：</strong>网约车、出租车、公交等出行需求。</li></ul><div class="answer-label">三、供给侧数据</div><ul><li><strong>配套服务设施、交通通行率：</strong>判断成熟度、吸引力、协调能力与承载力。</li><li><strong>游客结构：</strong>团队/个人、首访/重访、客源地等，观察传播力与复游基础。</li></ul><div class="answer-label">四、模型原创数据</div><p><strong>文化噪音指数：</strong>把游客对“同质化、商业化”等评价与社媒文化内容量化，用来识别文化体验是否被噪音稀释。</p>', source:'对应文档：计算源 · 1—10 项' },
+      { keys:['计算值','-7','−7','周期','求异','求静','区间'], title:'先看总分落在哪个区间，再决定动作', body:'<div class="answer-label">示例判断</div><p>总分为 <strong>−7</strong> 时，落在【−10，−6）区间，因此属于<strong>“求静加强期”</strong>。这意味着市场文化体验需求弱，自然观光需求旺盛。</p><div class="answer-block"><strong>五档区间</strong><ul><li>（6，10】：求异加强期——文化体验需求旺盛。</li><li>（1，6】：求异和缓期——文化体验需求较强。</li><li>【−1，1】：临界期——文化体验与自然观光需求并重。</li><li>【−6，−1）：求静和缓期——自然观光需求较强。</li><li>【−10，−6）：求静加强期——自然观光需求旺盛。</li></ul></div><div class="answer-block"><strong>使用建议</strong><p>如果你只知道总分，先用区间做方向判断；如果要制定具体方案，则应回看是哪几个指标拉高或拉低了总分，避免只看一个总数。</p></div>', source:'对应文档：计算方式 · 五档周期判定' },
+      { keys:['游客接待量','a>b','a小于b','增速','示例赋值'], title:'游客接待量的示例：比较两个景区增速', body:'<div class="answer-label">变量定义</div><p>把黄山风景区年游客增速记为数据“a”，把古徽州文化旅游区年游客增速记为数据“b”。</p><div class="answer-block"><strong>赋值规则</strong><ul><li>当 <strong>a &gt; b</strong>：指标赋 −1 分，指向“求静”。</li><li>当 <strong>a &lt; b</strong>：指标赋 +1 分，指向“求异”。</li><li>当两者相差不超过 ±2%：视为相等，赋 0 分。</li></ul></div><div class="answer-block"><strong>判断含义</strong><p>该示例不是单纯比较游客数量，而是比较增速所代表的变化方向：当文化旅游区增速更快，模型把游客变化理解为文化体验需求上升；当自然景区增速更快，则更偏向自然观光。</p></div>', source:'对应文档：以“游客接待量”为例计算' },
+      { keys:['商业规模红线','商业体数量','商业体质量','红线'], title:'商业规模红线：控制数量，更要提高质量', body:'<div class="answer-label">核心判断</div><p>这里的“红线”不是传统静态、强制的禁令，而是一条弹性、隐形的管理边界，目标是保护景观完整性、文化性和原生村民在地利益。</p><div class="answer-block"><strong>数量怎么管</strong><ul><li>主体景点内严格管制商业行为，保证游客观赏的完整性。</li><li>非主体景点区设置专门经营区域，区域大小和数量匹配景区规模。</li><li>同一区域的商业不能同质化，避免整个景区沦为单一“商业街”。</li></ul></div><div class="answer-block"><strong>质量看什么</strong><ul><li>经营者：从单一商品营收扩展到景观营收、文化营收和参观营收。</li><li>商品：提高当地文创品牌产品占比，结合“村村出品”开发文化思想产品和商业微景点。</li><li>游客：观察停留时间与购买率，判断新颖性、吸引力和付费意愿。</li><li>景区：观察商业体外观与周边景观的协调度，即景观影响率。</li></ul></div>', source:'对应文档：商业规模红线具体论述' },
+      { keys:['青年文创','几期','分几期','初期','中期','晚期','村村出品'], title:'青年文创培养计划：三阶段推进，并与村落生产联动', body:'<div class="answer-label">计划定位</div><p>青年文创计划关注“工作者来源”，吸引有大理想、远视角、新思想的返乡或留乡青年；“村村出品”关注“工作方向”，把徽州文化与乡村资源转成有当地识别度的产品。</p><div class="answer-block"><strong>实施路径</strong><ul><li><strong>初期（0—6个月）：</strong>在 1—3 个热度较高的景区试点，成立青年文创工作室；招募 4—5 位青年、1 位当地手工艺村民和 1 位教育讲师，先由村民带路探索文化。</li><li><strong>中期（6—12个月）：</strong>产品达到一定规模并获得市场认可后，成立自主文创品牌、增加试点，由成熟工作室辅导新工作室。</li><li><strong>晚期（12—24个月）：</strong>按景区规模建立不同大小的工作室，形成黄山本土文创品牌集群；讲师退出日常运营，转为协调宣传工作组。</li></ul></div><div class="answer-block"><strong>与红线的关系</strong><p>计划为商业规模红线提供更丰富、更本土的商品形式，减少同质化竞争，同时用文化内核提升游客消费欲与停留时间。</p></div>', source:'对应文档：青年文创培养计划、联动“商业规模红线”' },
+      { keys:['传承中心','哪些部门','部门','徽州文化','保护中心'], title:'徽州文化传承保护中心：五部门形成文化资源中枢', body:'<div class="answer-label">设立目的</div><p>中心以“坚守文脉，保护传承”为核心，针对古建筑修缮、民俗宣传之外的内核挖掘不足、整合不足、力量薄弱和创新不足等问题，整合研究者与青年力量。</p><div class="answer-block"><strong>五部门分工</strong><ul><li><strong>运营部：</strong>协调日常运行、资源分配、人员招募，作为中枢。</li><li><strong>研究部：</strong>汇总重编徽州古籍、开展古村实地考察、撰写研究文章，可分学者研究组与青年创新组。</li><li><strong>项目部：</strong>筹办研学活动、假期大讲堂等项目。</li><li><strong>信息部：</strong>整合信息、建设徽文化数字库、对接文创工作室。</li><li><strong>宣传部：</strong>运营自媒体、发布信息、接收游客和市场反馈。</li></ul></div><div class="answer-block"><strong>工作闭环</strong><p>研究部挖掘资料 → 信息部数字化整理 → 运营部调整计划 → 项目部落地活动 → 宣传部发布并收集反馈 → 反馈回到运营部继续调整。</p></div>', source:'对应文档：徽州文化传承保护中心 · 部门构建与核心方案' }
+    ];
+    const topicReports = [
+      {keys:['设施','基础设施','景区建设','自然还是文化'], title:'黄山旅游设施：先服务自然观光，再把文化嵌入线路', body:'<div class="answer-label">判断</div><p>黄山的设施配置不宜在“自然”和“文化”之间二选一。主体景点的设施应先服务观景、步行、休息、换乘和承载力；徽州文化、村落体验和文创经营则更适合放在非主体景点、古村和游线节点上。</p><div class="answer-block"><strong>怎么落地</strong><ul><li>主景区：优先处理高峰拥堵、换乘、游线断点和观景完整性。</li><li>外围节点：配置小规模文化展示、研学和村落体验，避免把主景点变成商业街。</li><li>判断效果：同时观察交通通行率、设施承载、满意率、投诉率和游客停留时间。</li></ul></div>',source:'分析依据：配套服务设施、交通通行率与商业规模红线' },
+      {keys:['民宿','酒店','住宿','住哪里','住宿怎么办'], title:'黄山民宿酒店：从过夜配套变成“自然游线 + 徽州村落”的入口', body:'<div class="answer-label">判断</div><p>民宿酒店的大趋势不应只是增加床位，而是延长游客停留时间。黄山风景区周边重点提升自然游线的住宿衔接、服务品质和安静感；古徽州片区则发展有地方文化辨识度的民宿，让住宿成为了解村落和徽州文化的入口。</p><div class="answer-block"><strong>需要观察的信号</strong><ul><li>住宿预定量是否和游客接待量同步增长。</li><li>游客是否从“一日游”变成更长停留。</li><li>民宿是否有真实的当地特色，而不是统一装修和同质化经营。</li></ul></div><div class="answer-block"><strong>管理建议</strong><p>先改善住宿与景区交通、游线、餐饮和文化节点的衔接，再扩大数量。能够提升停留时间、满意率和消费欲的民宿，才值得继续获得资源支持。</p></div>',source:'分析依据：住宿预定量、游客停留时间与游客消费欲' },
+      {keys:['体验','游客体验','满意度','投诉','哪里需要提高','体验不好'], title:'黄山游客体验：先找出“最费时间、最容易投诉”的环节', body:'<div class="answer-label">判断</div><p>提升游客体验不能只靠增加活动。应先用游客意向调研、满意率、投诉率、交通通行率和停留时间，找出体验损耗最大的地方：通常是入口换乘、高峰期拥堵、游线断点、服务设施不足，以及商业与景观冲突的区域。</p><div class="answer-block"><strong>建议的排查顺序</strong><ul><li>先看入口、换乘站和主干线：游客是否进得来、走得顺、离得开。</li><li>再看游线和休息设施：是否出现停留过短、疲劳或拥堵集中。</li><li>最后看商业和文化内容：是否真正增加体验，还是带来同质化和文化噪音。</li></ul></div>',source:'分析依据：游客意向调研、交通通行率、配套设施与文化噪音指数' },
+      {keys:['票价','门票','价格','涨价','降价'], title:'黄山票价：把价格当作调节客流的工具，而不是简单涨跌', body:'<div class="answer-label">判断</div><p>附件没有给出具体票价金额，因此不能直接推算“应该涨多少”。从模型逻辑看，票价应和客流需求、景区承载、住宿预定和游客满意度联动，采用高峰与低峰、主体与外围、自然观光与文化项目的差异化方式。</p><div class="answer-block"><strong>建议方向</strong><ul><li>自然观光需求旺盛且承载压力高：高峰时段适度上浮，低峰时段或外围线路做优惠。</li><li>文化项目处于试点：先用组合票、低门槛体验票验证游客付费意愿。</li><li>调价后同步观察客流、住宿、投诉率、满意率和停留时间，不能只看收入。</li></ul></div>',source:'分析依据：需求周期、承载力、住宿预定量与游客消费欲；文档未提供具体票价数据' },
+      {keys:['公共交通','公交','网约车','出租车','交通怎么','堵车','交通资源'], title:'黄山公共交通：先解决主景区承载，再把人流导向文化节点', body:'<div class="answer-label">判断</div><p>公共交通资源分配的第一优先级是主景区入口、主干线、换乘站和高峰时段，先解决“进得来、走得顺、离得开”。当自然观光的基本盘稳定后，再用支线把古村、文创工作室和文化项目串起来，分散单一热门景点的压力。</p><div class="answer-block"><strong>资源分配逻辑</strong><ul><li>高峰期：增加接驳、换乘和主干线运力。</li><li>平峰期：用更灵活的支线连接古徽州村落和外围体验。</li><li>持续监测：把车流量、通行率、游客出行意向和投诉反馈纳入月度台账。</li></ul></div>',source:'分析依据：公共交通出行意向、交通通行率与景区承载力' },
+      {keys:['文化噪音','同质化','商业化','噪音程度','文化太多'], title:'黄山文化噪音：文档没有实测分值，当前应按风险信号监测', body:'<div class="answer-label">判断</div><p>附件只定义了“文化噪音指数”的来源，没有提供黄山当前的实测数值，所以不能直接说噪音达到多少百分比。它应通过游客对“同质化、商业化”的评价、社交媒体文化内容、投诉率和商业体与景观的协调度来持续判断。</p><div class="answer-block"><strong>什么情况说明噪音正在变大</strong><ul><li>不同景区出现相似店铺、相似产品和相似活动。</li><li>商业数量增加，但游客停留时间、购买率和满意度没有同步提升。</li><li>游客评价里“商业化、看不出地方特色”等反馈增加。</li><li>商业体外观与山岳景观、古村环境不协调。</li></ul></div><div class="answer-block"><strong>处理方法</strong><p>先减量，再提质。控制主体景点商业，把资源转向当地文创、村村出品和真正有徽州文化内核的产品。</p></div>',source:'分析依据：文化噪音指数、商业体数量与质量；文档未提供实测数值' },
+      {keys:['政府','管理者','政策','怎么管理','政府方案','管理方案'], title:'给黄山市政府与景区管理者的建议：建立一套会自我修正的资源配置机制', body:'<div class="answer-label">建议</div><p>黄山不适合只做一次性的规划。更稳妥的方式，是用十项指标持续判断市场偏向，再把资源分配到自然观光底盘、徽州文化内容和景区承载三类任务上。</p><div class="answer-block"><strong>0—6个月：先建立试点和台账</strong><p>选择 1—3 个热度较高的景区，建立游客、住宿、网络、收入、交通、设施、游客结构和文化噪音的月度数据；优先解决换乘、拥堵、投诉集中点，主体景点严格控制商业。</p></div><div class="answer-block"><strong>6—12个月：把文化项目做小、做真</strong><p>在非主体景点引入青年文创工作室、研学和少量文化项目，用停留时间、购买率、满意度检验产品质量；通过成熟工作室辅导新增试点。</p></div><div class="answer-block"><strong>12—24个月：形成文化资源中枢</strong><p>由徽州文化传承保护中心整合古籍、古村和研究资料，信息部数字化，项目部转化为活动，宣传部收集游客反馈，再由运营部调整计划，形成闭环。</p></div>',source:'分析依据：实施路径、青年文创培养计划与徽州文化传承保护中心' }
+    ];
+    const fallback={title:'可以从黄山的具体资源问题开始',body:'<div class="answer-label">例如</div><ul><li>黄山现在更应该发展自然观光还是徽州文化？</li><li>黄山民宿酒店的趋势应该往哪里走？</li><li>黄山哪里最需要改善游客体验？</li><li>黄山票价应该怎么根据客流变化？</li><li>黄山公共交通和文化噪音怎么判断？</li></ul><div class="answer-block"><strong>说明</strong><p>你不需要使用固定问法，直接描述问题即可。系统会根据黄山旅游资源知识库，按判断、依据和落地建议生成分析。</p></div>',source:'分析范围：附件一'};
+    const practicalNotes = [
+      ['“摇摆周期”是一套十源指标赋值模型','如果要把它用于真实景区，建议按月记录十项指标并保留变化趋势；总分只负责指方向，具体动作要回到导致分数变化的指标。'],
+      ['十个计算源分别回答四个问题','建议把游客行为、市场反馈、景区承载和文化噪音分开做台账，避免客流上涨就误判为景区整体变好。'],
+      ['先看总分落在哪个区间，再决定动作','周期判断适合做阶段性决策：先确定当前偏“求异”还是“求静”，再决定是增加文化项目、控制商业扩张，还是先修复交通和承载力。'],
+      ['游客接待量的示例：比较两个景区增速','使用时应比较同一时间口径下的增速，并连续观察，不能用某一个月份的偶然变化替代趋势。'],
+      ['商业规模红线：控制数量，更要提高质量','执行顺序应是先划分主体与非主体景点，再审核商业体的地方性、停留时间、购买率和景观协调度。'],
+      ['青年文创培养计划：三阶段推进，并与村落生产联动','不要先铺大摊子，先用一个小试点验证“当地文化能否变成游客愿意购买的产品”，再复制到其他景区。'],
+      ['徽州文化传承保护中心：五部门形成文化资源中枢','中心能否运转的关键不在部门数量，而在研究成果能否被信息部整理、被项目部使用，并通过宣传部拿回游客反馈。']
+    ];
+    function getAnswer(q){ const n=q.toLowerCase().replace(/\s/g,''); if(n.includes('报告')||n.includes('七项'))return answers[0]; let best=null,score=0; topicReports.forEach(a=>{const s=a.keys.reduce((sum,k)=>sum+(n.includes(k.toLowerCase().replace(/\s/g,''))?1:0),0);if(s>score){score=s;best=a;}}); if(best)return best; const exact=answers.slice(1).find(a=>a.keys.some(k=>n.includes(k.toLowerCase().replace(/\s/g,'')))); return exact||fallback; }
+    function renderAnswer(q){ const a=getAnswer(q); const note=(practicalNotes.find(x=>x[0]===a.title)||[])[1]; const box=document.querySelector('#answer'); const add=note?`<div class="answer-block"><strong>落地建议</strong><p>${note}</p></div>`:''; box.innerHTML=`<h3>${a.title}</h3>${a.body}${add}<div class="source">${a.source.replace('对应文档','分析依据').replace('内容范围','分析范围')}</div>`; box.classList.remove('show'); void box.offsetWidth; box.classList.add('show'); }
+    document.querySelector('#askBtn').onclick=()=>renderAnswer(document.querySelector('#question').value||'');
+    document.querySelector('#question').addEventListener('keydown',e=>{if(e.key==='Enter')renderAnswer(e.target.value)});
+    document.querySelectorAll('.chip,.module').forEach(el=>el.onclick=()=>{ const q=el.dataset.q||el.textContent; document.querySelector('[data-tab="qa"]').click(); document.querySelector('#question').value=q; renderAnswer(q); });
+    document.querySelectorAll('.tab').forEach(tab=>tab.onclick=()=>{document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t===tab)); document.querySelectorAll('.tab-panel').forEach(p=>p.style.display=p.id===tab.dataset.tab?'block':'none');});
+    const labels=['游客接待量','住宿预定量','游客意向调研','网络热度','服务业收入','公共交通意向','配套服务设施','交通通行率','游客结构','文化噪音指数']; const slider=document.querySelector('#sliders');
+    labels.forEach((label,i)=>{const row=document.createElement('div');row.className='slider-row';row.innerHTML=`<label>${i+1}　${label}</label><span class="slider-value">0</span><input type="range" min="-1" max="1" value="0" step="1" aria-label="${label}">`; slider.appendChild(row);});
+    function update(){let total=0; slider.querySelectorAll('input').forEach(inp=>{total+=+inp.value;inp.previousElementSibling.textContent=inp.value>0?'+1':inp.value});document.querySelector('#score').textContent=total>0?'+'+total:total;let phase='临界期',desc='黄山资源均衡：自然观光与徽州文化同步观察';if(total>6){phase='求异加强期';desc='资源偏向徽州文化、文创、研学与村落体验'}else if(total>1){phase='求异和缓期';desc='适度增加文化内容，同时守住自然景观底盘'}else if(total<-6){phase='求静加强期';desc='资源偏向自然观光、景观保护、交通与承载'}else if(total<-1){phase='求静和缓期';desc='优先优化自然游线，再小量补充徽州文化'}document.querySelector('#phase').textContent=phase;document.querySelector('#phaseDesc').textContent=desc} slider.addEventListener('input',update); update();
+  </script>
+
+
+</body></html>
